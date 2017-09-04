@@ -84,15 +84,10 @@ public class MainActivity extends BaseNfcActivity {
                         if (isuri(record)) {
                             parseRTuriRecord(record);
                         }
-
                     }
                 }
-
-
             }
         }
-
-
     }
 
     private void parseRTuriRecord(NdefRecord record) {
@@ -100,10 +95,7 @@ public class MainActivity extends BaseNfcActivity {
         if (tnf == NdefRecord.TNF_ABSOLUTE_URI) {
             RecordParse.parseAbsulotUriRecord(record);
         }
-
-
     }
-
     public static boolean isuri(NdefRecord ndefRecord) {
         if (ndefRecord.getTnf() == NdefRecord.TNF_WELL_KNOWN) {
             if (Arrays.equals(ndefRecord.getType(), NdefRecord.RTD_URI)) {
