@@ -103,14 +103,10 @@ public class MainActivity extends BaseNfcActivity {
             } else {
                 return false;
             }
-
-
         } else if (ndefRecord.getTnf() == NdefRecord.TNF_ABSOLUTE_URI) {
             return true;
         } else {
             return false;
         }
-
-
     }
 }

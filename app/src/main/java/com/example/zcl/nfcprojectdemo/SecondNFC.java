@@ -70,7 +70,6 @@ public class SecondNFC extends BaseNfcActivity {
                             // 访问散曲  每一个厂商的散曲的key都是不同的，要想解析数据，就必修知道每一个key
                             if (mifareClassic.authenticateSectorWithKeyA(i, MifareClassic.KEY_DEFAULT)) {
                                 isAuth = true;
-
                             } else if (mifareClassic.authenticateSectorWithKeyA(i, KEY_D)) {
                                 isAuth = true;
                             } else {
