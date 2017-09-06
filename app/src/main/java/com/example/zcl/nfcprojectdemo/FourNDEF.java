@@ -34,6 +34,7 @@ import java.io.IOException;
  * 非NDEF数据的读取
  */
 public class FourNDEF extends BaseNfcActivity {
+    private static final String TAG = "TAG";
     private TextView title_tv;
     private TextView content_tv;
     private NdefMessage msgs[] = null;
@@ -42,12 +43,6 @@ public class FourNDEF extends BaseNfcActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-
-    }
-
-    private void init() {
-
     }
 
     @Override
@@ -56,44 +51,25 @@ public class FourNDEF extends BaseNfcActivity {
         resolveIntent(intent);
     }
 
-    public static final byte[] KEY_D =
-            {(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF};
-
     private void resolveIntent(Intent intent) {
 
         String action = intent.getAction();
         if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action)) {
             ////1.获取Tag对象
             Tag detectedTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-            boolean isAuth = false;
             if (supportedTechs(detectedTag.getTechList())) {
                 MifareClassic mifareClassic = MifareClassic.get(detectedTag);
                 if (mifareClassic != null) {
                     try {
                         mifareClassic.connect();
-                        //获取散曲的个数
-                        int sectorCount = mifareClassic.getSectorCount();
-                        for (int i = 0; i < sectorCount; i++) {
-                            // 访问散曲  每一个厂商的散曲的key都是不同的，要想解析数据，就必修知道每一个key
-                            if (mifareClassic.authenticateSectorWithKeyA(i, MifareClassic.KEY_DEFAULT)) {
-                                isAuth = true;
 
-                            } else if (mifareClassic.authenticateSectorWithKeyA(i, KEY_D)) {
-                                isAuth = true;
-                            } else {
-                                isAuth = false;
-                            }
-                            if (isAuth) {
-                                int mBlock = mifareClassic.getBlockCountInSector(i);
-                                for (int j = 0; j < mBlock; j++) {
-                                    //每一个块的数据。 转化为String类型的数据
-                                    byte[] bytes = mifareClassic.readBlock(j);
+                        if(!mifareClassic.authenticateSectorWithKeyA(1, MifareClassic.KEY_DEFAULT)){
+                            //必须是16个的字节
+                            mifareClassic.writeBlock(1,"012345678912345".getBytes());
 
-                                }
-                            }
+                        }else {
+                            Log.e(TAG, "resolveIntent: 写入失败 " );
                         }
-
-
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -143,29 +119,4 @@ public class FourNDEF extends BaseNfcActivity {
         return issupport;
     }
 
-    //显示信息
-    private void processNdefMsg(NdefMessage[] msgs) {
-        if (msgs == null || msgs.length == 0) {
-            return;
-        } else {
-            for (int i = 0; i < msgs.length; i++) {
-
-                int length = msgs[i].getRecords().length;
-                //获取 records 长度
-                NdefRecord[] records = msgs[i].getRecords();
-                for (int j = 0; j < length; j++) {
-                    for (NdefRecord record : records) {
-                        parseRTuriRecord(record);
-                    }
-                }
-            }
-        }
-    }
-
-    private void parseRTuriRecord(NdefRecord record) {
-//获取的uri
-        Uri uri = RecordParse.parseAbsulotUriRecord(record);
-
-
-    }
 }

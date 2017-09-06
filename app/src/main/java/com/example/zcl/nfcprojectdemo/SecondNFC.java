@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.Log;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.zcl.nfcprojectdemo.base.BaseNfcActivity;
 import com.example.zcl.nfcprojectdemo.utils.RecordParse;
@@ -36,11 +37,12 @@ public class SecondNFC extends BaseNfcActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
+        init();
     }
 
     private void init() {
-
+        title_tv = (TextView) findViewById(R.id.tv_nfctext);
+        content_tv = (TextView) findViewById(R.id.content_tv);
     }
 
     @Override
@@ -55,6 +57,7 @@ public class SecondNFC extends BaseNfcActivity {
     private void resolveIntent(Intent intent) {
 
         String action = intent.getAction();
+
         if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action)) {
             ////1.获取Tag对象
             Tag detectedTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
@@ -64,10 +67,10 @@ public class SecondNFC extends BaseNfcActivity {
                 if (mifareClassic != null) {
                     try {
                         mifareClassic.connect();
-                        //获取散曲的个数
+                        //获取散区的个数
                         int sectorCount = mifareClassic.getSectorCount();
                         for (int i = 0; i < sectorCount; i++) {
-                            // 访问散曲  每一个厂商的散曲的key都是不同的，要想解析数据，就必修知道每一个key
+                            // 访问散区  每一个厂商的散区的key都是不同的，要想解析数据，就必修知道每一个key
                             if (mifareClassic.authenticateSectorWithKeyA(i, MifareClassic.KEY_DEFAULT)) {
                                 isAuth = true;
                             } else if (mifareClassic.authenticateSectorWithKeyA(i, KEY_D)) {
@@ -80,7 +83,7 @@ public class SecondNFC extends BaseNfcActivity {
                                 for (int j = 0; j < mBlock; j++) {
                                     //每一个块的数据。 转化为String类型的数据
                                     byte[] bytes = mifareClassic.readBlock(j);
-
+                                    Toast.makeText(this, "bytes" + bytes.toString(), Toast.LENGTH_SHORT).show();
                                 }
                             }
                         }
@@ -98,7 +101,7 @@ public class SecondNFC extends BaseNfcActivity {
     }
 
     /**
-     * TAG  的类型
+     * android.nfc.teach 下的常用的十个类
      *
      * @param techList
      * @return
@@ -107,10 +110,13 @@ public class SecondNFC extends BaseNfcActivity {
         boolean issupport = false;
         for (String s : techList) {
             Log.e("TAG", "supportedTechs: ");
-            //列举出支持的类型
-            if (s.equals("android.nfc_tech_filter.tech.Ndef")) {
+            if (s.equals("android.nfc_tech_filter.tech.IsoDep")) {
                 issupport = true;
             } else if (s.equals("android.nfc_tech_filter.tech.MifareClassic")) {
+                issupport = true;
+            } else if (s.equals("android.nfc_tech_filter.tech.MifareUltralight")) {
+                issupport = true;
+            } else if (s.equals("android.nfc_tech_filter.tech.Ndef")) {
                 issupport = true;
             } else if (s.equals("android.nfc_tech_filter.tech.NdefFormatable")) {
                 issupport = true;
@@ -120,10 +126,11 @@ public class SecondNFC extends BaseNfcActivity {
                 issupport = true;
             } else if (s.equals("android.nfc_tech_filter.tech.NfcB")) {
                 issupport = true;
-
-            } else if (s.equals("android.nfc_tech_filter.tech.Ndef")) {
+            } else if (s.equals("android.nfc_tech_filter.tech.NfcF")) {
                 issupport = true;
-            } else if (s.equals("android.nfc_tech_filter.tech.Nfcv")) {
+            } else if (s.equals("android.nfc_tech_filter.tech.NfcV")) {
+                issupport = true;
+            } else if (s.equals("android.nfc_tech_filter.tech.NfcBarcode")) {
                 issupport = true;
             } else {
                 issupport = false;

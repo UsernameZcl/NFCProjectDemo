@@ -28,7 +28,7 @@ import java.util.Arrays;
 public class MainActivity extends BaseNfcActivity {
 
     private static final String TAG = "TAG";
-    private NdefMessage[] ndefMessages;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -54,9 +54,10 @@ public class MainActivity extends BaseNfcActivity {
                 }
             } else {
                 byte[] empey = new byte[]{};
+                //0x05 表示的是NdefRecord.TNF_UNKNOWN
                 NdefRecord ndefRecord = new NdefRecord((short) 0x05, empey, empey, empey);
                 NdefMessage ndefMessage = new NdefMessage(new NdefRecord[]{ndefRecord});
-                ndefMessages = new NdefMessage[]{ndefMessage};
+                msgs = new NdefMessage[]{ndefMessage};
             }
             processNdefMsg(msgs);
         } else if (NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)) {
@@ -64,9 +65,6 @@ public class MainActivity extends BaseNfcActivity {
         } else if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(action)) {
 
 
-        } else {
-            Log.e(TAG, "aaaaa: ");
-            finish();
         }
     }
 
@@ -94,6 +92,14 @@ public class MainActivity extends BaseNfcActivity {
         short tnf = record.getTnf();
         if (tnf == NdefRecord.TNF_ABSOLUTE_URI) {
             RecordParse.parseAbsulotUriRecord(record);
+        }else if(tnf ==NdefRecord.TNF_WELL_KNOWN){
+            RecordParse.parseWellKnowUriRecord(record) ;
+        }else if(tnf ==NdefRecord.TNF_MIME_MEDIA){
+            RecordParse.parseMineRecord(record);
+        }else  if(tnf ==NdefRecord.TNF_EXTERNAL_TYPE){
+            RecordParse.parseExternalRecord(record);
+        }  else {
+            Toast.makeText(this, "不知名的uri", Toast.LENGTH_SHORT).show();
         }
     }
     public static boolean isuri(NdefRecord ndefRecord) {

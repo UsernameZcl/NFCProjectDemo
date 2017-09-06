@@ -32,8 +32,8 @@ public class BaseNfcActivity extends AppCompatActivity {
         super.onStart();
 
         //检查NFC
-//        NfcCheck();
-        mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
+        NfcCheck();
+       // mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
         //init NFC
         //一旦截获NFC消息，就会通过PendingIntent调用窗口
         mPendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, getClass()), 0);
@@ -50,13 +50,12 @@ public class BaseNfcActivity extends AppCompatActivity {
             Toast.makeText(this, "设备不支持NDEF", Toast.LENGTH_SHORT).show();
             return;
         } else {
-            boolean enabled = mNfcAdapter.isEnabled();
             if (mNfcAdapter.isEnabled()) {
                 //默认跳转到安卓默认的nfc界面，去开启nfc
-
-                Intent intent = new Intent(Settings.ACTION_NFC_SETTINGS);
-                startActivity(intent);
-
+              Toast.makeText(this, "请在系统设置中先启用NFC功能！", Toast.LENGTH_SHORT).show();
+//                Intent intent = new Intent(Settings.ACTION_NFC_SETTINGS);
+//                startActivity(intent);
+//finish();
             }
         }
     }
